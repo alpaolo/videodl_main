@@ -37,11 +37,19 @@
           + '/'
       );
     
+      var msg = ''
       chatSocket.onmessage = function(e) {
-          const data = JSON.parse(e.data);
-          document.querySelector("#message-text").textContent=(data.message + '\n');
-          if ( data.message == 'download_ok' ) {document.location ='http://127.0.0.1:8000/download/finish/'}
+        const data = JSON.parse(e.data);
+        msg = data.message + '\n'
+        document.querySelector("#message-text").textContent=(msg);
+        sessionStorage.setItem('message', msg);
+        console.log(msg)
+        if ( data.message == 'download_ok' ) {document.location ='http://127.0.0.1:8000/download/finish/'}
       };
+
+      chatSocket.onopen = function(e) {
+        console.log('chat open')
+      }
     
       chatSocket.onclose = function(e) {
           console.error('Chat socket closed unexpectedly');
@@ -54,7 +62,12 @@
           chatSocket.send(JSON.stringify({
               'message': "downloaded launched"
           }));
-          messageInputDom.value = '';
+      };
+
+      document.querySelector('#readme_btn').onclick = function(e) {
+          chatSocket.send(JSON.stringify({
+              'message': "readme"
+          }));
       };
     </script>
   </body>

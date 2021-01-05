@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+import os
 import json
 from django.shortcuts import redirect
 from django.http import HttpResponse
@@ -7,9 +8,14 @@ import subprocess
 from subprocess import check_output, run
 import threading
 from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
-from ... consumers  import ChatConsumer
+from asgiref.sync import async_to_sync, sync_to_async
+from channels.consumer  import SyncConsumer
+from channels.generic.websocket import WebsocketConsumer
+from ... simple_consumer import SimpleConsumer
 import time
+import asyncio
+from channels.consumer import AsyncConsumer
+
 
 class MyLogger(object):
     def debug(self, msg):
@@ -22,10 +28,6 @@ class MyLogger(object):
         return(msg)
 
 
-def my_hook(d):
-    if d['status'] == 'finished':
-        return 'Done downloading, now converting ...'
-
 def download_process(url):
     ydl_opts = {
         'outtmpl': 'videodl.mp4',
@@ -35,8 +37,49 @@ def download_process(url):
     }
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])
-        return "sto a fatiga!"
-        #return ydl_opts['progress_hooks']
+        return ydl_opts['progress_hooks']
+
+def my_hook(d):
+    
+    channel_layer = get_channel_layer()
+    room_group_name = 'chat_%s' % 'room'
+    ##########################################
+    if d['status'] == 'finished':
+        print("my hook finish")
+        file_tuple = os.path.split(os.path.abspath(d['filename']))
+        print("Done downloading {}".format(file_tuple[1]))
+        os.remove(os.path.abspath(d['filename']))
+        print (os.path.abspath(d['filename']), 'removed')    
+        '''
+        async_to_sync(channel_layer.send)(
+            "channel_name",
+            {
+                'type': 'websocket.receive',
+                'message': 'download_ok'
+            }
+        )    
+        '''
+        async_to_sync(channel_layer.group_send)(
+            room_group_name,
+            {
+                'type': 'chat_message',
+                'message': 'download_ok'
+            }
+        )
+        
+    if d['status'] == 'downloading':
+        p = d['_percent_str']
+        p = p.replace('%','')
+        print(d['filename'], d['_percent_str'], d['_eta_str'])
+        async_to_sync(channel_layer.group_send)(
+            room_group_name,
+            {
+                'type': 'chat_message',
+                'message': 'download...'
+            }
+        )
+       
+        
 
 
 def popen_and_call(url):
@@ -72,7 +115,32 @@ def call_on_exit ():
             'message': "download_ok"
         }
     )
+    #os.remove('videodl.mp4')
+    #print ('videodl.mp4', 'removed')
     return
 
+async def sendmessage ():
+    channel_layer = get_channel_layer()
+    room_group_name = 'chat_room'
+    i  = 99
+    si = str(i)
+    obj = {'message':si}
+    await channel_layer.send("channel_name",
+        {
+            'type': 'websocket.send',
+            'message': json.dumps(obj)
+        }
+        )
+    '''    
+    for i in range (0,10):
+        si = str(i)
+        obj = {'message':si}
+        await asyncio.sleep(1)
+        print(i)
+    '''    
+        
+
+        
+        
 
 

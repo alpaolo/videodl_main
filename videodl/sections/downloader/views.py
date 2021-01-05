@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from . process import download_process, popen_and_call, call_on_exit
+from . process import download_process, popen_and_call, call_on_exit, sendmessage
 import threading
 import json
 
@@ -25,8 +25,10 @@ def downloadyoutube(request, action=''): # va tutto spostato in models
             return render(request, 'd_youtube.html', args)
         else: 
             args['message'] = "sto scaricando il file: " + args['yturl']
-            popen_and_call(args['yturl'])
-
+            #popen_and_call(args['yturl'])
+            download_process(args['yturl'])
+            #await sendmessage()
+            
     return render(request, 'd_youtube.html', args)
 
 def downloadrai(request):
@@ -37,10 +39,6 @@ def finishdownloadyoutube(request):
     args ={'section':'Video Downloader:', 'subsection': 'YOUTUBE', 'message' : 'aggio fornuto', 'videosrc':'', 'download_videosrc' : ''}
     return render(request, 'd_youtube.html', args)
 
-
-def cippa(request):
-    #return render(request, 'videodl/cippa.html', {})
-    return HttpResponse("Hello, world. You're at  cippa.")
 
 
     
