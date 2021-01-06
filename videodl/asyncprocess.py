@@ -50,7 +50,7 @@ class AsyncProcess(object):
         }
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
-            return ydl_opts['progress_hooks']
+            
 
     def my_hook(self,d):
         
@@ -113,7 +113,7 @@ class AsyncProcess(object):
         return
 
     def sendmessage (self, type, message):
-        room_name = self.consumer.scope['url_route']['kwargs']['room_name']
+        room_name = self.consumer.scope['url_route']['kwargs']['comm_name']
         room_group_name = 'chat_%s' % room_name
         async_to_sync(self.consumer.channel_layer.group_send)(
             self.consumer.room_group_name,
@@ -122,11 +122,5 @@ class AsyncProcess(object):
                 'message': message
             }
         )
-        '''    
-        for i in range (0,10):
-            si = str(i)
-            obj = {'message':si}
-            await asyncio.sleep(1)
-            print(i)
-        '''    
+
         

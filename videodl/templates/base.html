@@ -27,27 +27,46 @@
       </div>
     </div>
     <script>
+
+      var msg = ''
+      var finish = false
+
+      function doProgress() {
+        console.log("progress");
+        if(finish==false) {
+          document.querySelector("#message-text").textContent += ".";
+          setTimeout(doProgress, 50);//wait 50 millisecnds then recheck
+          return;
+        }
+      }
+
+
       //const roomName = JSON.parse(document.getElementById('room-name').textContent);
-      const roomName = 'room'
+      const commName = 'server'
      
       const chatSocket = new WebSocket(
           'ws://'
           + window.location.host
-          + '/ws/chat/'
-          + roomName
+          + '/ws/comm/'
+          + commName
           + '/'
       );
       
    
     
-      var msg = ''
+      
       chatSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
         msg = data.message + '\n'
-        document.querySelector("#message-text").textContent=(msg);
         sessionStorage.setItem('message', msg);
         console.log(msg)
-        if ( data.message == 'download_ok' ) {document.location ='http://127.0.0.1:8000/download/finish/'}
+        if ( data.message == 'progress_download' ) {doProgress();}
+        if ( data.message == 'download_ok' ) {
+          finish = true;
+          document.querySelector("#message-text").textContent += "Download finish";
+          /*document.location ='http://127.0.0.1:8000/download/youtube/'*/
+          document.querySelector('#input-file').value = ''
+        }
       };
 
       chatSocket.onopen = function(e) {
@@ -59,16 +78,17 @@
       };
       
       document.querySelector('#download-btn').onclick = function(e) {
-          dlurl = document.querySelector('#input-file').value        
-          chatSocket.send(JSON.stringify({
-              'type' : "start_download",
-              'message': dlurl
-          }));
+        document.querySelector("#message-text").textContent = ""
+        dlurl = document.querySelector('#input-file').value        
+        chatSocket.send(JSON.stringify({
+            'type' : "start_download",
+            'message': dlurl
+        }));
       };
 
       document.querySelector('#readme-btn').onclick = function(e) {
           chatSocket.send(JSON.stringify({
-              'type' : "chat_message",
+              'type' : "client_message",
               'message': "readme"
           }));
       };

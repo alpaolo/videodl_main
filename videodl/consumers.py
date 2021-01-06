@@ -6,7 +6,8 @@ import asyncio
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
-        self.room_name = self.scope['url_route']['kwargs']['room_name']
+        self.room_name = self.scope['url_route']['kwargs']['comm_name']
+        print ("CONNESSIONE ATTIVA: ",self.scope)
         self.room_group_name = 'chat_%s' % self.room_name
 
         # Join room group
@@ -48,18 +49,12 @@ class ChatConsumer(WebsocketConsumer):
         type = event['type']
         print ( "START DOWNLOAD: ho ricevuto il messagio di: ", type , "con messaggio: " , message, " e inizio la procedura di download" )
         process = AsyncProcess(self)
-        #process.sendmessage()
+        # Comunico al client l'avvenuto start del processo e la progressione dello stesso
+        self.send(text_data=json.dumps({
+            'message': 'progress_download'
+        }))
         process.download_process(dlurl)
-
-        '''
-        async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name,
-            {
-                'type': 'end_download',
-                'message': message
-            }
-        )
-        '''
+       
 
      # Handler per il tipo "progress_download"    
     def progress_download(self, event):
@@ -78,16 +73,17 @@ class ChatConsumer(WebsocketConsumer):
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
             {
-                'type': 'chat_message',
+                'type': 'client_message',
                 'message': message
             }
         )
 
     # Receive message from room group
-    # Handler per il tipo "chat_message"
-    def chat_message(self, event):
+    # Handler per il tipo "client_message"
+    # Trasmette il messahggio al client
+    def client_message(self, event):
         message = event['message']
-        print ( "CHAT MESSAGE: ho ricevuto il messagio in chat", message)
+        print ( "CLIENT: ho ricevuto il messagio nell'handler del client", message)
         # Send message to WebSocket
         self.send(text_data=json.dumps({
             'message': message
