@@ -60,7 +60,7 @@
         msg = data.message + '\n'
         sessionStorage.setItem('message', msg);
         console.log(msg)
-        if ( data.message == 'progress_download' ) {doProgress();}
+        if ( data.message == 'progress_download' ) {finish = false; document.querySelector("#message-text").textContent = ""; doProgress();}
         if ( data.message == 'download_ok' ) {
           finish = true;
           document.querySelector("#message-text").textContent += "Download finish";
@@ -78,13 +78,15 @@
       };
       
       document.querySelector('#download-btn').onclick = function(e) {
-        document.querySelector("#message-text").textContent = ""
+        //document.querySelector("#message-text").textContent = ""
         dlurl = document.querySelector('#input-file').value        
-        chatSocket.send(JSON.stringify({
+        if (dlurl !='') {
+          chatSocket.send(JSON.stringify({
             'type' : "start_download",
             'message': dlurl
-        }));
-      };
+            }));
+          };
+        }
 
       document.querySelector('#readme-btn').onclick = function(e) {
           chatSocket.send(JSON.stringify({

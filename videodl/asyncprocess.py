@@ -64,7 +64,8 @@ class AsyncProcess(object):
             print("Done downloading {}".format(file_tuple[1]))
             os.remove(os.path.abspath(d['filename']))
             print (os.path.abspath(d['filename']), 'removed')    
-            self.sendmessage('end_download','download_ok')    
+            self.sendmessage('end_download','download_ok') 
+           
 
         if d['status'] == 'downloading':
             p = d['_percent_str']
