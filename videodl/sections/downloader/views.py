@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from . process import download_process, popen_and_call, call_on_exit, sendmessage
 import threading
 import json
 
@@ -22,14 +21,8 @@ def downloadyoutube(request, action=''): # va tutto spostato in models
         args['yturl'] = request.POST.get('youtube_url', False)
         if args['yturl'] == False or args['yturl'] == '':
             args['message'] = "Nessun link da scaricare"
-            return render(request, 'd_youtube.html', args)
-        else: 
-            args['message'] = "sto scaricando il file: " + args['yturl']
-            #popen_and_call(args['yturl'])
-            download_process(args['yturl'])
-            #await sendmessage()
-            
     return render(request, 'd_youtube.html', args)
+
 
 def downloadrai(request):
     return render(request, 'd_rai.html', args)

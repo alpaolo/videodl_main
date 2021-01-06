@@ -9,7 +9,7 @@
 
 <div class="row">
   <p>
-    <button id="readme_btn" class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample"
+    <button id="readme-btn" class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample"
       aria-expanded="false" aria-controls="collapseExample" onClick="btnReadmeClicked(this)">
       Leggimi
     </button>
@@ -26,11 +26,11 @@
     {% csrf_token %}
   <div>
     <div>
-      <input type="input" class="input-group-text" id="inputGroupFile04" name="youtube_url" value=""/>
+      <input type="input" class="input-group-text" id="input-file" name="youtube_url" value=""/>
       <label for="inputGroupFile04"></label>
     </div>
     <div>
-      <input id="download_btn" class="btn btn-secondary" type="submit" value="Scarica" />
+      <input id="download-btn" class="btn btn-secondary" type="submit" value="Scarica" />
     </div>
   </div>
 </form>

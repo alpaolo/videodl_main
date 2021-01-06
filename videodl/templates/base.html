@@ -29,6 +29,7 @@
     <script>
       //const roomName = JSON.parse(document.getElementById('room-name').textContent);
       const roomName = 'room'
+     
       const chatSocket = new WebSocket(
           'ws://'
           + window.location.host
@@ -36,6 +37,8 @@
           + roomName
           + '/'
       );
+      
+   
     
       var msg = ''
       chatSocket.onmessage = function(e) {
@@ -54,18 +57,18 @@
       chatSocket.onclose = function(e) {
           console.error('Chat socket closed unexpectedly');
       };
-
       
-    
-    
-      document.querySelector('#download_btn').onclick = function(e) {
+      document.querySelector('#download-btn').onclick = function(e) {
+          dlurl = document.querySelector('#input-file').value        
           chatSocket.send(JSON.stringify({
-              'message': "downloaded launched"
+              'type' : "start_download",
+              'message': dlurl
           }));
       };
 
-      document.querySelector('#readme_btn').onclick = function(e) {
+      document.querySelector('#readme-btn').onclick = function(e) {
           chatSocket.send(JSON.stringify({
+              'type' : "chat_message",
               'message': "readme"
           }));
       };
