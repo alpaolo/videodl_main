@@ -18,7 +18,7 @@
       <div class="row justify-content-center">
         {% include 'header.html' %}
         <div class="col-8">
-          <h1 class="mt-2">User friendly A.I. for business</h1>
+          <h2 class="mt-2">Web Video Downloader</h2>
           <hr class="mt-0 mb-4">
             {% block content %} 
             {% endblock content %}
@@ -29,15 +29,22 @@
     <script>
 
       var msg = ''
-      var finish = false
+      window.finish = false
 
+      var cycle = 0
       function doProgress() {
-        console.log("progress");
-        if(finish==false) {
+        if(window.finish===false) {
+          console.log("progress");
+          cycle ++
+          if (cycle == 10) {
+            document.querySelector("#message-text").textContent = "";
+            cycle = 0
+          }
           document.querySelector("#message-text").textContent += ".";
-          setTimeout(doProgress, 50);//wait 50 millisecnds then recheck
+          if(window.finish === false)setTimeout(doProgress, 50);//wait 50 millisecnds then recheck
           return;
         }
+        else return;
       }
 
 
@@ -53,6 +60,7 @@
       );
       
    
+      document.querySelector('#thumb').style.display = "none"
     
       
       chatSocket.onmessage = function(e) {
@@ -60,12 +68,18 @@
         msg = data.message + '\n'
         sessionStorage.setItem('message', msg);
         console.log(msg)
-        if ( data.message == 'progress_download' ) {finish = false; document.querySelector("#message-text").textContent = ""; doProgress();}
-        if ( data.message == 'download_ok' ) {
-          finish = true;
+        if ( data.message.includes("progress_download")) {window.finish = false; document.querySelector("#message-text").textContent = ""; doProgress();}
+        if ( data.message.includes("download_ok") ) {
+          filename=data.message.split("#")[1];
+          document.querySelector('#ytvideo').src="/static/media/"+filename;
+          window.finish = true;
           document.querySelector("#message-text").textContent += "Download finish";
           /*document.location ='http://127.0.0.1:8000/download/youtube/'*/
-          document.querySelector('#input-file').value = ''
+          document.querySelector('#input-file').value = ""
+          //document.querySelector('#thumb').src=document.querySelector('#thumb').src+"/videodl.webp"
+          document.querySelector('#ytvideo').style.display = "block"
+          document.querySelector("#message-text").textContent=""
+          console.log("fine download in client")
         }
       };
 
@@ -79,7 +93,7 @@
       
       document.querySelector('#download-btn').onclick = function(e) {
         //document.querySelector("#message-text").textContent = ""
-        dlurl = document.querySelector('#input-file').value        
+        dlurl = document.querySelector('#input-file').value;        
         if (dlurl !='') {
           chatSocket.send(JSON.stringify({
             'type' : "start_download",
@@ -94,6 +108,14 @@
               'message': "readme"
           }));
       };
+
+      document.querySelector('#input-file').onchange = function (e){
+        document.querySelector('#ytvideo').style.display = "none";
+        
+        //document.querySelector('#ytvideo').src="";
+      }
+
+
     </script>
   </body>
 </html>

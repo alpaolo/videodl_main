@@ -2,7 +2,7 @@
 {% load static %}
 {% load  media %}
 {% block content %}
-<h3>{{ section}}</h3>
+<h4>Youtube Facebook Instagram</h4>
 <h5>{{ subsection }}</h5>
 
 <hr class="mt-0 mb-4">
@@ -11,44 +11,50 @@
   <p>
     <button id="readme-btn" class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample"
       aria-expanded="false" aria-controls="collapseExample" onClick="btnReadmeClicked(this)">
-      Leggimi
+      Istruzioni
     </button>
   </p>
   <div class="collapse" id="collapseExample">
+    <div class="col">
     <div class="card card-body">
-      Carica un immagine per verificare quanti visi sono presenti. Verranno elencate una serie di caratteristiche e proprietà relative alle stesse. 
+      Per scaricare il video copia l'indirizzo nel box sottostante, appena compare il video premere il tasto destro e "salva video come". 
     </div>
   </div>
+  <hr/>
 </div>
-<hr class="mt-0 mb-4">
-<div class="row">
+</div>
+
   <form action="{% url 'dyoutube' 'download' %}" method="POST" id="form1">
     {% csrf_token %}
   <div>
     <div>
-      <input type="input" class="input-group-text" id="input-file" name="youtube_url" value=""/>
+      <input type="input" class="input-group-text" id="input-file" name="youtube_url" value="" style="text-align: left" />
       <label for="inputGroupFile04"></label>
     </div>
     <div>
-      <input id="download-btn" class="btn btn-secondary" type="button" value="Scarica" />
+      <input id="download-btn" class="btn btn-secondary" type="button" value="Ok" style="min-width: 100px"/>
     </div>
   </div>
 </form>
-</div>
+
 <br/>
 <div class="row">
-{% if imgsrc != '' %} 
-  <img src="{% static imgsrc %}" class="img-thumbnail rounded float-left" style="max-width:400px; height:auto" />
-  {% if rekog_imgsrc != '' %} 
-    <img src="{% static rekog_imgsrc %}" class="img-thumbnail rounded float-right" style="max-width:400px; height:auto" />
-  {% endif %}
-  <br/> <br/>
-  <span id="message-text"></span>
-  <hr class="mt-0 mb-4">
-  <h4>{{ n_items }}</h4>
-  <hr class="mt-0 mb-4"> 
-{% endif %}
+  <img id="thumb" src="" class="img-thumbnail rounded float-left" style="max-width:400px; height:auto" />
 </div>
+
+<div class="row">
+  <video id="ytvideo" width="320" height="240" controls style="display:none">
+  Your browser does not support the video tag.
+  </video>
+
+
+</div>
+
+  <br/>
+  <span id="message-text"></span>
+
+
+
 
 
 {% for item in items %}

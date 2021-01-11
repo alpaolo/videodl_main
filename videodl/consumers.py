@@ -54,14 +54,12 @@ class ChatConsumer(WebsocketConsumer):
             'message': 'progress_download'
         }))
         process.download_process(dlurl)
-        #process.sendmessage('end_download',"download_ok")
+        #process.get_info(dlurl)
+        #process.popen_process(dlurl)
+
        
 
-     # Handler per il tipo "progress_download"    
-    def progress_download(self, event):
-        message = event['message']
-        type = event['type']
-        print ( "PROGRESS DOWNLOAD: ho ricevuto il messagio di: ", type , "con messaggio: " , message)
+     
         
 
 
@@ -85,7 +83,7 @@ class ChatConsumer(WebsocketConsumer):
     # Trasmette il messahggio al client
     def client_message(self, event):
         message = event['message']
-        print ( "CLIENT: ho ricevuto il messagio nell'handler del client e lo ritrasmetto al client", message)
+        print ( "CLIENT HANDLER: ho ricevuto il messagio nell'handler del client e lo ritrasmetto al client", message)
         # Send message to WebSocket
         self.send(text_data=json.dumps({
             'message': message
